@@ -1,23 +1,20 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 
+
+const files = ref<File[]>([])
+function handleChange(event: CustomEvent) {
+  const uploadedFiles = event.detail[0]; 
+  files.value = uploadedFiles
+}
 
 </script>
 
 <template>
-
-    <custom-uploader></custom-uploader>
-
+  
+    <custom-uploader :fileList="files" :value="files" multiple  @change="handleChange"></custom-uploader>
 </template>
 
 <style scoped>
-.logo {
-  width: 100px;
-  height: 100px;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>
