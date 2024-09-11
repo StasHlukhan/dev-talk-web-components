@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./public/scripts/custom-uploader.umd.js"></script>
+</head>
+
+<body>
+  <custom-uploader id="custom-uploader" accept="image/png,image/jpeg" multiple>
+    <div slot="tip">Some custom content</div>
+  </custom-uploader>
+
+  <script>
+    const files = []
+    const customUploader = document.getElementById('custom-uploader')
+    customUploader.addEventListener('change', handleChange)
+
+    function handleChange(event) {
+      files.value = event.detail[0];
+      customUploader.files = event.detail[0];
+      console.log(files.value);
+    }
+  </script>
+</body>
+
+</html>

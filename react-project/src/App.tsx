@@ -1,48 +1,30 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 function App() {
-  const uploaderRef = useRef<HTMLElement | null>(null);
-  const [files, setFiles] = useState([])
-  function handleChange (event: CustomEvent) {
-    console.log(event)
-  }
+  const uploaderRef = useRef<React.JSX.IntrinsicElements['custom-uploader']>();
+  const [files, setFiles] = useState<File[]>([]);
+
   useEffect(() => {
-    const handleFileChange = (event: CustomEvent) => {
-      console.log(event.detail);
-      const fileArray = event.detail[0]
-      setFiles(fileArray);
-      
-    };
-    const uploader = uploaderRef.current;
-
-    if (uploader) {
-      uploader.addEventListener('change', handleFileChange as EventListener);
-    }
-
-    return () => {
-      if (uploader) {
-        uploader.removeEventListener('change', handleFileChange as EventListener);
+    function handleChange({ detail: [uploadedFiles] }: CustomEvent<[File[]]>) {
+      if (uploadedFiles?.length) {
+        if (uploaderRef.current) {
+          uploaderRef.current.files = uploadedFiles;
+        }
+        setFiles(uploadedFiles);
       }
-    };
-  }, []);
-  useEffect(() => {
-    if (uploaderRef.current) {
-      uploaderRef.current.fileList = files;
     }
+
+    const uploader = uploaderRef.current;
+    uploader?.addEventListener('change', handleChange as EventListener);
+
+    return () => uploader?.removeEventListener('change', handleChange as EventListener);
   }, [files]);
 
-  console.log('value: ',files)
-    return (
-    <div>
-
-      <custom-uploader
-        value={files}
-        handleChange={(event:CustomEvent)=>handleChange(event)}
-        ref={uploaderRef}
-      ></custom-uploader>
-    </div>
+  return (
+    <custom-uploader multiple accept="image/png,image/jpeg" ref={uploaderRef}>
+      <div slot="tip">Some custom tip content</div>
+    </custom-uploader>
   );
-};
-
+}
 
 export default App;

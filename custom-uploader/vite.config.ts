@@ -22,10 +22,10 @@ export default defineConfig(({ mode }) => {
     base: './',
     build: {
       emptyOutDir: true,
-      outDir: '../react-project/public/scripts',
+      outDir: '../native-project/public/scripts',
       lib: {
         entry: './src/main.ts',
-        name: 'Custom-uploader',
+        name: 'CustomUploader',
         fileName: (format) => `custom-uploader.${format}.js`
       }
     },

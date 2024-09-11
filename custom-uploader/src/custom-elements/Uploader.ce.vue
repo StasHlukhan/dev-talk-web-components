@@ -10,41 +10,46 @@
     <div class="upload-dragger" :class="{ 'is-dragging': isDragging }">
       <IconUpload class="icon" />
       <div class="upload__text">Drop file here or <span>click to upload</span></div>
+
+      <div class="upload__tip">
+        <slot name="tip" />
+      </div>
     </div>
     <input
       ref="fileInputRef"
       type="file"
       :accept="accept"
-      :multiple="multiple"
+      :multiple="multiple !== undefined ? ['true', true].includes(multiple) : false"
       @change="onFileChange"
     >
   </div>
 
-  <div class="upload__tip">jpg/png files with a size less than 500kb</div>
-
   <ul class="upload-list">
-    <li v-for="(file, index) in fileList" :key="index">
+    <li v-for="(file, index) in localFiles" :key="index">
       <IconFile /> {{ file.name }}
     </li>
   </ul>
 </template>
 
 <script setup lang="ts">
-const fileList = defineModel<File[]>('fileList')
-
 const props = defineProps<{
+  files: File[]
   accept?: string
-  multiple?: boolean
-  value?: File[]
+  multiple?: boolean | string
 }>()
 
 const emit = defineEmits<{
-  (e: 'change', files: File[]): void
-  (e: 'cancel'): void
+  change: [value: File[]]
+  cancel: []
 }>()
 
-const fileInputRef = ref<HTMLInputElement | null>(null)
+const fileInputRef = ref<HTMLInputElement>()
 const isDragging = ref(false)
+
+const localFiles = ref<File[]>([])
+watchEffect(() => {
+  localFiles.value = props.files ? [...props.files] : []
+})
 
 function triggerFileUpload () {
   if (fileInputRef.value) {
@@ -54,10 +59,9 @@ function triggerFileUpload () {
 
 function onFileChange (event: Event) {
   const target = event.target as HTMLInputElement
-  console.log(props)
+
   if (target.files) {
-    const files = Array.from(target.files)
-    emit('change', files)
+    emit('change', [...target.files])
   } else {
     emit('cancel')
   }
